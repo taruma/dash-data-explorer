@@ -1,0 +1,15 @@
+name: dash-bmkg-viewer
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - plotly
+  - dash
+  - numpy
+  - pandas
+  - matplotlib
+  - pytables
+  - pip:
+    - hidrokit
+    - dash-bootstrap-components
