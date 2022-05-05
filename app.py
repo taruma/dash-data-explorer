@@ -239,7 +239,7 @@ app.layout = dbc.Container(
                     [
                         dbc.Col(
                             [
-                                html.H3("🛖 stasiun"),
+                                html.P("🛖 stasiun", className="fs-2"),
                                 dcc.Dropdown(
                                     options=options_stations,
                                     value=[96783],
@@ -251,7 +251,7 @@ app.layout = dbc.Container(
                         ),
                         html.Div(
                             [
-                                html.H3("🧮 parameter"),
+                                html.P("🧮 parameter", className="fs-2"),
                                 dcc.Dropdown(
                                     options=options_parameter,
                                     value="RR",
