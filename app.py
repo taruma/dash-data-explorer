@@ -76,32 +76,131 @@ options_parameter = [
     for par_abbr, par_name in label_parameter.items()
 ]
 
+# FIGURE GENERATOR
 # GRAPH MAP
-data_map = [
-    go.Scattermapbox(
-        lat=metadata_files.Lintang,
-        lon=metadata_files.Bujur,
-        text=metadata_files["Nama Stasiun"].str.lower(),
-        customdata=metadata_files.index,
-    )
-]
-layout_map = go.Layout(
-    clickmode="event+select",
-    title=dict(
-        text="<b>🔎 Lokasi Stasiun BMKG</b>".lower(),
-        pad=dict(t=-35),
-        font=dict(size=30),
-    ),
-    margin=dict(t=80),
-    mapbox=dict(
-        center=dict(
-            lat=metadata_files.Lintang.mean(),
-            lon=metadata_files.Bujur.mean(),
+def figure_map():
+    data_map = [
+        # go.Scattermapbox(
+        #     lat=metadata_files.Lintang,
+        #     lon=metadata_files.Bujur,
+        #     hoverinfo="none",
+        #     marker=go.scattermapbox.Marker(size=12, color="black", opacity=1),
+        # ),
+        go.Scattermapbox(
+            lat=metadata_files.Lintang,
+            lon=metadata_files.Bujur,
+            text=metadata_files["Nama Stasiun"].str.lower(),
+            customdata=metadata_files.index,
+            name="stasiun",
         ),
-    ),
-    dragmode="pan",
-)
-fig_map = go.Figure(data_map, layout_map)
+    ]
+    layout_map = go.Layout(
+        clickmode="event+select",
+        title=dict(
+            text="<b>🔎 Lokasi Stasiun BMKG</b>".lower(),
+            pad=dict(t=-35),
+            font=dict(size=30),
+        ),
+        margin=dict(t=80),
+        mapbox=dict(
+            center=dict(
+                lat=metadata_files.Lintang.mean(),
+                lon=metadata_files.Bujur.mean(),
+            ),
+        ),
+        dragmode="pan",
+    )
+    return go.Figure(data_map, layout_map)
+
+
+# FIGURE SCATTER PARAMETER
+def figure_with_parameter(stations, parameter):
+    data = []
+    for stat_id in stations:
+        with pd.HDFStore(FILE_BMKG, mode="r") as store:
+            table = store.get(f"/stations/sta{stat_id}")
+            clean_table(table)
+        name = f'{stat_id} - {metadata_files.loc[stat_id, "Nama Stasiun"]}'.lower()
+        emoji = label_parameter[parameter].split()[0]
+        data.append(
+            go.Scatter(
+                x=table.index,
+                y=table.loc[:, parameter],
+                name=name,
+                hovertemplate=f"{emoji}: %{{y}}",
+            )
+        )
+
+    title = f"<b>📈 Grafik {label_parameter[parameter].split('(')[0]}</b>".lower()
+
+    layout = go.Layout(
+        hovermode="x",
+        title=dict(
+            text=title,
+            pad=dict(t=-25),
+        ),
+        height=300,
+        xaxis=dict(title="<b>📅 tanggal</b>"),
+        yaxis=dict(title=f"<b>{label_parameter[parameter]}</b>"),
+        margin=dict(t=65),
+        dragmode="zoom",
+        showlegend=True,
+    )
+
+    fig = go.Figure(data, layout)
+
+    return fig
+
+
+# FIGURE COMPLETENESS
+def figure_completeness(stations, parameter):
+    table_percent = []
+    for stat_id in stations:
+        with pd.HDFStore(FILE_COMPLETENESS, mode="r") as store:
+            table = store.get(f"/stations/sta{stat_id}")
+            table = table[[parameter]].round(3) * 100
+            table.columns = [f"{stat_id}"]
+            table_percent.append(table)
+
+    table_percent = pd.concat(table_percent, axis=1).T.iloc[::-1]
+    table_percent_date = table_percent.copy()
+    table_percent_date[:] = table_percent_date.columns.strftime("%B %Y").str.lower()
+
+    data = go.Heatmap(
+        z=table_percent.to_numpy(),
+        x=table_percent.columns,
+        y=[
+            f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
+            for stat_id in table_percent.index
+        ],
+        zmin=0,
+        zmax=100,
+        customdata=table_percent_date.to_numpy(),
+    )
+
+    layout = go.Layout(
+        title=dict(
+            text=f"<b>💯 Kelengkapan Data {label_parameter[parameter].split('(')[0]}</b>".lower(),
+            pad=dict(t=-25),
+        ),
+        height=300,
+        xaxis=dict(title={"text": "<b>📅 tanggal</b>"}),
+        yaxis=dict(
+            title={"text": "<b>🆔 ID Stasiun</b>".lower()},
+            tickmode="array",
+            tickvals=[
+                f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
+                for stat_id in table_percent.index
+            ],
+            ticktext=table_percent.index,
+            tickangle=-90,
+        ),
+        margin=dict(t=65),
+        dragmode="zoom",
+    )
+
+    return go.Figure(data, layout)
+
 
 # DASH APPLICATION
 app = dash.Dash(
@@ -133,7 +232,7 @@ app.layout = dbc.Container(
                 dcc.Markdown(pytemplate.MD_TUTORIAL.lower()),
             ],
         ),
-        dcc.Graph(id="map-fig", figure=fig_map, config=CONFIG_DCC_GRAPH),
+        dcc.Graph(id="map-fig", figure=figure_map(), config=CONFIG_DCC_GRAPH),
         dbc.Container(
             [
                 dbc.Row(
@@ -264,93 +363,6 @@ def create_graph(_, selectedData, parameter, dropdownval):
         fig_par,
         fig_com,
     ]
-
-
-def figure_completeness(stations, parameter):
-    table_percent = []
-    for stat_id in stations:
-        with pd.HDFStore(FILE_COMPLETENESS, mode="r") as store:
-            table = store.get(f"/stations/sta{stat_id}")
-            table = table[[parameter]].round(3) * 100
-            table.columns = [f"{stat_id}"]
-            table_percent.append(table)
-
-    table_percent = pd.concat(table_percent, axis=1).T.iloc[::-1]
-    table_percent_date = table_percent.copy()
-    table_percent_date[:] = table_percent_date.columns.strftime("%B %Y").str.lower()
-
-    data = go.Heatmap(
-        z=table_percent.to_numpy(),
-        x=table_percent.columns,
-        y=[
-            f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
-            for stat_id in table_percent.index
-        ],
-        zmin=0,
-        zmax=100,
-        customdata=table_percent_date.to_numpy(),
-    )
-
-    layout = go.Layout(
-        title=dict(
-            text=f"<b>💯 Kelengkapan Data {label_parameter[parameter].split('(')[0]}</b>".lower(),
-            pad=dict(t=-25),
-        ),
-        height=300,
-        xaxis=dict(title={"text": "<b>📅 tanggal</b>"}),
-        yaxis=dict(
-            title={"text": "<b>🆔 ID Stasiun</b>".lower()},
-            tickmode="array",
-            tickvals=[
-                f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
-                for stat_id in table_percent.index
-            ],
-            ticktext=table_percent.index,
-            tickangle=-90,
-        ),
-        margin=dict(t=65),
-        dragmode="zoom",
-    )
-
-    return go.Figure(data, layout)
-
-
-def figure_with_parameter(stations, parameter):
-    data = []
-    for stat_id in stations:
-        with pd.HDFStore(FILE_BMKG, mode="r") as store:
-            table = store.get(f"/stations/sta{stat_id}")
-            clean_table(table)
-        name = f'{stat_id} - {metadata_files.loc[stat_id, "Nama Stasiun"]}'.lower()
-        emoji = label_parameter[parameter].split()[0]
-        data.append(
-            go.Scatter(
-                x=table.index,
-                y=table.loc[:, parameter],
-                name=name,
-                hovertemplate=f"{emoji}: %{{y}}",
-            )
-        )
-
-    title = f"<b>📈 Grafik {label_parameter[parameter].split('(')[0]}</b>".lower()
-
-    layout = go.Layout(
-        hovermode="x",
-        title=dict(
-            text=title,
-            pad=dict(t=-25),
-        ),
-        height=300,
-        xaxis=dict(title="<b>📅 tanggal</b>"),
-        yaxis=dict(title=f"<b>{label_parameter[parameter]}</b>"),
-        margin=dict(t=65),
-        dragmode="zoom",
-        showlegend=True,
-    )
-
-    fig = go.Figure(data, layout)
-
-    return fig
 
 
 if __name__ == "__main__":

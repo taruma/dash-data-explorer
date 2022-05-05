@@ -48,25 +48,52 @@ hktemplate.layout.title = dict(
 )
 hktemplate.layout.margin = dict(l=0, r=0, b=0)
 hktemplate.layout.mapbox = dict(
-    bearing=0, style="carto-positron", zoom=4, pitch=0, accesstoken=MAPBOX_TOKEN
+    bearing=0,
+    style="carto-positron",
+    zoom=4,
+    pitch=0,
+    accesstoken=MAPBOX_TOKEN,
 )
 hktemplate.layout.height = 500  # only affects map
 hktemplate.layout.showlegend = False
 hktemplate.layout.font = {"family": "Neucha"}
 hktemplate.layout.hoverlabel = {"font_family": "Neucha"}
+hktemplate.layout.xaxis = {
+    "showline": True,
+    "linewidth": 2,
+    "linecolor": "black",
+    "mirror": True,
+    "automargin": True,
+    "gridcolor": "#bdbdbd",
+    # "calendar": "islamic",
+    # "zerolinecolor": "#bdbdbd",
+    # "zerolinewidth": 2,
+}
+hktemplate.layout.yaxis = {
+    "showline": True,
+    "linewidth": 2,
+    "linecolor": "black",
+    "mirror": True,
+    "automargin": True,
+    "gridcolor": "#bdbdbd",
+    "zerolinecolor": "#bdbdbd",
+    "zerolinewidth": 2,
+    "rangemode": "tozero",
+}
 hktemplate.layout.xaxis.title = {"font": {"size": 20}, "standoff": 15}
 hktemplate.layout.yaxis.title = {"font": {"size": 15}, "standoff": 15}
 hktemplate.layout.legend = {
     "yanchor": "top",
-    "y": 0.95,
+    "y": 1,
     "xanchor": "left",
-    "x": 0.01,
+    "x": 0,
     "orientation": "h",
-    "bgcolor": "rgba(0,0,0,0)",
+    # "bgcolor": "rgba(0,0,0,0)",
+    "bgcolor": "rgba(250, 240, 230, 0.5)",
     "font": {"size": 15},
 }
-# hktemplate.layout.paper_bgcolor = "rgba(0,0,0,0)"
-# hktemplate.layout.plot_bgcolor = "rgba(0,0,0,0)"
+hktemplate.layout.paper_bgcolor = "white"
+hktemplate.layout.plot_bgcolor = "white"
 
 # SPECIFIC PLOT
 # SCATTERMAPBOX
@@ -75,12 +102,18 @@ hktemplate.data.scattermapbox = [
         mode="markers",
         # marker=go.scattermapbox.Marker(size=10, color="DodgerBlue"),
         marker={
-            "size": 10,
-            # "color": "DodgerBlue",
-            "opacity": 0.7,
+            "size": 12,
+            "color": "DodgerBlue",
+            "opacity": 1,
         },
         hovertemplate="%{customdata} - %{text}<br>(%{lat:.5f}, %{lon:.5f})<extra></extra>",
-        hoverlabel={"font_family": "Neucha"},
+        hoverlabel={
+            "font_family": "Neucha",
+            "bgcolor": "MediumSlateBlue",
+            "bordercolor": "black",
+            "font": {"color": "white", "size": 15},
+        },
+        line={"width": 2, "color": "black"},
     )
 ]
 
@@ -92,10 +125,20 @@ hktemplate.data.heatmap = [
         colorbar={
             "orientation": "v",
             "outlinecolor": "black",
-            "outlinewidth": 1,
-            # "title": "💯", # BUGGED
+            "outlinewidth": 2,
+            "ticksuffix": "%",
+            "x": 1,
+            "xpad": 10,
+            "y": 0.5,
+            "ypad": 0,
+            # "title": {
+            #     "font": {"color": "black", "size": 20},
+            #     "side": "top",
+            #     "text": "💯",
+            # },  # BUGGED
         },
-        hovertemplate="📅: %{customdata}<br>🆔: %{y}<br>💯: %{z}<extra></extra>",
+        hovertemplate="📅: %{customdata}<br>🆔: %{y}<br>💯: %{z}%<extra></extra>",
+        hoverlabel={"bordercolor": "black", "font": {"color": "white"}},
     )
 ]
 
