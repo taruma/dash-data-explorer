@@ -38,11 +38,8 @@ SELECTED_MAX = int(config["PLOTLY"]["SELECTED_MAX"])
 CONFIG_DCC_GRAPH = {"modeBarButtonsToRemove": ["toImage"]}
 DEBUG = int(config["DASH"]["DEBUG"])
 BOOTSTRAP_THEME = config["BOOTSTRAP"]["THEME"]
-APP_TITLE = "BMKG Data Explorer"
-APP_UPDATE_TITLE = "Perbarui..."
-
-# SETUP PLOTLY FIGURE
-
+APP_TITLE = "BMKG Data Explorer".lower()
+APP_UPDATE_TITLE = "Perbarui...".lower()
 
 # SETUP PLOTLY TEMPLATE
 pio.templates.default = pytemplate.hktemplate
@@ -58,17 +55,21 @@ with pd.HDFStore(FILE_BMKG, mode="r") as store:
 # PLOTLY OPTIONS
 # DROPDOWN STATIONS
 options_stations = [
-    {"label": f"{stat_id} - {stat_name}", "value": stat_id}
+    {"label": f"{stat_id} - {stat_name}".lower(), "value": stat_id}
     for stat_id, stat_name in zip(metadata_files.index, metadata_files["Nama Stasiun"])
 ]
 
 # DROPDOWN PARAMETER
 LABEL_PARAMETER_ABBR = "Tn Tx Tavg RH_avg RR ss ff_x ddd_x ff_avg ddd_car".split()
 LABEL_PARAMETER_NAME = (
-    "Temperatur minimum (°C),Temperatur maksimum (°C),Temperatur rata-rata (°C),"
-    + "Kelembapan rata-rata (%),Curah hujan (mm),Lamanya penyinaran matahari (jam),Kecepatan angin maksimum (m/s)"
-    + ",Arah angin saat kecepatan maksimum (°),Kecepatan angin rata-rata (m/s),Arah angin terbanyak (°)"
-).split(",")
+    (
+        "❄️ Temperatur minimum (°C),♨️ Temperatur maksimum (°C),🔥 Temperatur rata-rata (°C),"
+        + "🍃 Kelembapan rata-rata (%),🌧️ Curah hujan (mm),🌞 Lamanya penyinaran matahari (jam),💨 Kecepatan angin maksimum (m/s)"
+        + ",↗️ Arah angin saat kecepatan maksimum (°),🎐 Kecepatan angin rata-rata (m/s),🎯 Arah angin terbanyak (°)"
+    )
+    .lower()
+    .split(",")
+)
 label_parameter = dict(zip(LABEL_PARAMETER_ABBR, LABEL_PARAMETER_NAME))
 options_parameter = [
     {"label": par_name, "value": par_abbr}
@@ -80,17 +81,16 @@ data_map = [
     go.Scattermapbox(
         lat=metadata_files.Lintang,
         lon=metadata_files.Bujur,
-        hovertemplate="%{customdata} - %{text}<br>(%{lat:.5f}, %{lon:.5f})<extra></extra>",
-        text=metadata_files["Nama Stasiun"],
+        text=metadata_files["Nama Stasiun"].str.lower(),
         customdata=metadata_files.index,
     )
 ]
 layout_map = go.Layout(
     clickmode="event+select",
     title=dict(
-        text="<b>Lokasi Stasiun BMKG</b>",
+        text="<b>🔎 Lokasi Stasiun BMKG</b>".lower(),
         pad=dict(t=-35),
-        font=dict(size=25),
+        font=dict(size=30),
     ),
     margin=dict(t=80),
     mapbox=dict(
@@ -117,30 +117,20 @@ app.layout = dbc.Container(
             [
                 html.H1(
                     APP_TITLE,
-                    className="text-center text-uppercase fw-bold fs-1 p-0",
+                    className="text-center fw-bold fs-1 p-0",
                     style={"cursor": "pointer"},
                     id="tooltip-target",
                 ),
-                dbc.Tooltip("Open Source Edition (Offline)", target="tooltip-target"),
+                dbc.Tooltip(
+                    "Open Source Edition (Offline)".lower(), target="tooltip-target"
+                ),
                 dcc.Markdown(
                     """
                 created by [taruma](https://github.com/taruma) & powered by [hidrokit](https://github.com/hidrokit)
                 """,
                     className="text-center fw-bolder fs-8",
                 ),
-                dcc.Markdown(
-                    """
-        - Buka situs ini melalui komputer/laptop.
-        - Navigasi menggunakan plotly:
-            - Gunakan berbagai opsi bar yang muncul di kanan atas setiap grafik. 
-            - Klik dua kali untuk mereset zoom (saat opsi zoom/pan).
-        - Untuk memilih pos stasiun bisa dengan: 
-            - _Click_ atau _Box/Lasso Select_ _marker_ yang ada di peta. (Tahan Shift untuk memilih lebih dari satu)
-            - Dari menu _dropdown_ pilih stasiun atau ketik nama/id stasiun yang ingin dilihat.
-        - Pilih parameter yang ingin dilihat.
-        - Klik tombol "Tampilkan Grafik".
-        """,
-                ),
+                dcc.Markdown(pytemplate.MD_TUTORIAL.lower()),
             ],
         ),
         dcc.Graph(id="map-fig", figure=fig_map, config=CONFIG_DCC_GRAPH),
@@ -150,7 +140,7 @@ app.layout = dbc.Container(
                     [
                         dbc.Col(
                             [
-                                html.H3("Stasiun"),
+                                html.H3("🛖 stasiun"),
                                 dcc.Dropdown(
                                     options=options_stations,
                                     value=[96783],
@@ -162,7 +152,7 @@ app.layout = dbc.Container(
                         ),
                         html.Div(
                             [
-                                html.H3("Parameter"),
+                                html.H3("🧮 parameter"),
                                 dcc.Dropdown(
                                     options=options_parameter,
                                     value="RR",
@@ -181,7 +171,7 @@ app.layout = dbc.Container(
                         html.Div(className="col"),
                         html.Div(
                             dbc.Button(
-                                "Tampilkan Grafik",
+                                "Tampilkan Grafik".lower(),
                                 id="button-main",
                                 color="primary",
                                 className="float-end",
@@ -212,16 +202,20 @@ app.layout = dbc.Container(
         ),
         html.Hr(),
         dcc.Markdown(
-            "made with [Dash+Plotly](https://plotly.com)", className="fs-4 text-center"
+            "made with [Dash+Plotly](https://plotly.com)".lower(),
+            className="fs-4 text-center",
         ),
         html.Footer(
             [
                 html.Span("\u00A9"),
                 " 2022 ",
-                html.A("Taruma Sakti Megariansyah", href="https://github.com/taruma"),
-                ". MIT License. Visit this repository on ",
                 html.A(
-                    "Github",
+                    "Taruma Sakti Megariansyah".lower(),
+                    href="https://github.com/taruma",
+                ),
+                ". MIT License. Visit this repository on ".lower(),
+                html.A(
+                    "Github".lower(),
                     href="https://github.com/taruma/dash-bmkg-data-explorer",
                 ),
                 ".",
@@ -282,24 +276,38 @@ def figure_completeness(stations, parameter):
             table_percent.append(table)
 
     table_percent = pd.concat(table_percent, axis=1).T.iloc[::-1]
+    table_percent_date = table_percent.copy()
+    table_percent_date[:] = table_percent_date.columns.strftime("%B %Y").str.lower()
 
     data = go.Heatmap(
         z=table_percent.to_numpy(),
         x=table_percent.columns,
-        y=table_percent.index,
+        y=[
+            f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
+            for stat_id in table_percent.index
+        ],
         zmin=0,
         zmax=100,
+        customdata=table_percent_date.to_numpy(),
     )
 
     layout = go.Layout(
         title=dict(
-            text=f"<i>Kelengkapan Data {label_parameter[parameter].split('(')[0]}(0-100%)</i>".title(),
+            text=f"<b>💯 Kelengkapan Data {label_parameter[parameter].split('(')[0]}</b>".lower(),
             pad=dict(t=-25),
-            font=dict(size=20),
         ),
         height=300,
-        xaxis=dict(title="Tanggal"),
-        yaxis=dict(title=f"ID Stasiun"),
+        xaxis=dict(title={"text": "<b>📅 tanggal</b>"}),
+        yaxis=dict(
+            title={"text": "<b>🆔 ID Stasiun</b>".lower()},
+            tickmode="array",
+            tickvals=[
+                f'{stat_id} - {metadata_files.at[int(stat_id), "Nama Stasiun"]}'.lower()
+                for stat_id in table_percent.index
+            ],
+            ticktext=table_percent.index,
+            tickangle=-90,
+        ),
         margin=dict(t=65),
         dragmode="zoom",
     )
@@ -309,33 +317,35 @@ def figure_completeness(stations, parameter):
 
 def figure_with_parameter(stations, parameter):
     data = []
-    name_col = []
     for stat_id in stations:
         with pd.HDFStore(FILE_BMKG, mode="r") as store:
             table = store.get(f"/stations/sta{stat_id}")
             clean_table(table)
-        name = f'{stat_id} - {metadata_files.loc[stat_id, "Nama Stasiun"]}'
+        name = f'{stat_id} - {metadata_files.loc[stat_id, "Nama Stasiun"]}'.lower()
+        emoji = label_parameter[parameter].split()[0]
         data.append(
             go.Scatter(
-                x=table.index, y=table.loc[:, parameter], mode="lines", name=name
+                x=table.index,
+                y=table.loc[:, parameter],
+                name=name,
+                hovertemplate=f"{emoji}: %{{y}}",
             )
         )
-        name_col.append(name)
 
-    title = f"<i>Grafik {label_parameter[parameter].split('(')[0]}</i>".title()
+    title = f"<b>📈 Grafik {label_parameter[parameter].split('(')[0]}</b>".lower()
 
     layout = go.Layout(
-        hovermode="x unified",
+        hovermode="x",
         title=dict(
             text=title,
             pad=dict(t=-25),
-            font=dict(size=20),
         ),
         height=300,
-        xaxis=dict(title="Tanggal"),
-        yaxis=dict(title=f"{label_parameter[parameter]}"),
+        xaxis=dict(title="<b>📅 tanggal</b>"),
+        yaxis=dict(title=f"<b>{label_parameter[parameter]}</b>"),
         margin=dict(t=65),
         dragmode="zoom",
+        showlegend=True,
     )
 
     fig = go.Figure(data, layout)

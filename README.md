@@ -1,6 +1,6 @@
 # DASHBOARD BMKG DATA EXPLORER
 
-![Web capture_4-5-2022_195846_127 0 0 1](https://user-images.githubusercontent.com/1007910/166690982-56bc3c21-3a0f-402c-be9f-8f16bd2308b6.jpeg)
+![Web capture_5-5-2022_143748_127 0 0 1](https://user-images.githubusercontent.com/1007910/166880494-376eadf7-6892-4a64-874f-0b85bf9d1d25.jpeg)
 
 Cara menjalankan Dashboard:
 
