@@ -178,16 +178,17 @@ app.layout = dbc.Container(
                 ),
                 dbc.Row(
                     [
-                        # html.Div(className="col"),
-                        dbc.Button(
-                            "Tampilkan Grafik",
-                            id="button-main",
-                            color="primary",
-                            size="lg",
-                            className="col-2",
+                        html.Div(className="col"),
+                        html.Div(
+                            dbc.Button(
+                                "Tampilkan Grafik",
+                                id="button-main",
+                                color="primary",
+                                className="float-end",
+                            ),
+                            className="col-4 mt-2",
                         ),
                     ],
-                    className="mt-2 justify-content-end",
                 ),
             ],
         ),

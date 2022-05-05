@@ -51,6 +51,8 @@ hktemplate.layout.mapbox = dict(
 )
 hktemplate.layout.height = 500  # only affects map
 hktemplate.layout.showlegend = False
+hktemplate.layout.font = {"family": "Neucha"}
+hktemplate.layout.hoverlabel = {"font_family": "Neucha"}
 
 # SPECIFIC PLOT
 # SCATTERMAPBOX
