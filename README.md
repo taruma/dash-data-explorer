@@ -24,3 +24,4 @@ Konfigurasi yang harus diisi adalah:
 - Disini saya tidak akan menyediakan datasetnya, silakan cari sendiri atau melakukan kompilasi sendiri dari situs BMKG Online. Untuk sekarang sudah saya sediakan dummy data.
 - Untuk dataset persen kelengkapan data (`_BMKG_COMPLETENESS`), itu hasil olahan dari dataset BMKG yang saya simpan dalam bentuk HDF5 juga. Jadi, sebenarnya informasi kelengkapan data bmkg itu hasil olahan dari dataset utama.
 - Source code repo ini tidak jauh berbeda dengan situs https://app-bmkg-exp.herokuapp.com/. Repo ini dirancang untuk penggunaan lokal (aplikasi web lokal). 
+- Silakan buat isu kalau ada pertanyaan/komentar/kritik/dll atau pull request kalo pengen utak-atik dan sharing modifikasinya. Didukung kalau mau _fork_ repo ini. hehe. :)
