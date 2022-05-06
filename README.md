@@ -1,4 +1,4 @@
-# DASHBOARD BMKG DATA EXPLORER
+# DASHBOARD ~BMKG~ 🛖 DATA EXPLORER
 
 ![Web capture_6-5-2022_195257_app-bmkg-exp herokuapp com](https://user-images.githubusercontent.com/1007910/167135166-ebb956ef-a80d-4cfe-a840-5d1d4156e7a5.jpeg)
 
