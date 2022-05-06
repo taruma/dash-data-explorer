@@ -38,8 +38,13 @@ SELECTED_MAX = int(config["PLOTLY"]["SELECTED_MAX"])
 CONFIG_DCC_GRAPH = {"modeBarButtonsToRemove": ["toImage"]}
 DEBUG = int(config["DASH"]["DEBUG"])
 BOOTSTRAP_THEME = config["BOOTSTRAP"]["THEME"]
-APP_TITLE = "BMKG Data Explorer".lower()
-APP_UPDATE_TITLE = "Perbarui...".lower()
+APP_TITLE = "🛖 Exp🚩⭕re®️".lower()
+APP_TITLE_HEAD = [
+    html.Del("BMKG", style={"text-decoration-style": "double"}),
+    " ",
+    APP_TITLE,
+]
+APP_UPDATE_TITLE = "🤔🤔🤔🤔".lower()
 
 # SETUP PLOTLY TEMPLATE
 pio.templates.default = pytemplate.hktemplate
@@ -63,9 +68,9 @@ options_stations = [
 LABEL_PARAMETER_ABBR = "Tn Tx Tavg RH_avg RR ss ff_x ddd_x ff_avg ddd_car".split()
 LABEL_PARAMETER_NAME = (
     (
-        "❄️ Temperatur minimum (°C),♨️ Temperatur maksimum (°C),🔥 Temperatur rata-rata (°C),"
-        + "🍃 Kelembapan rata-rata (%),🌧️ Curah hujan (mm),🌞 Lamanya penyinaran matahari (jam),💨 Kecepatan angin maksimum (m/s)"
-        + ",↗️ Arah angin saat kecepatan maksimum (°),🎐 Kecepatan angin rata-rata (m/s),🎯 Arah angin terbanyak (°)"
+        "❄️ coldness (❎),♨️ hotness (🅱️),🔥 fire rating (🅰),"
+        + "🍃 windyness (🌬️),🌧️ sadness (😢),🌞 burning (🆑),💨 wooshness (🚓)"
+        + ",↗️ direction (💥),🎐 none (🗽),🎯 target (👏)"
     )
     .lower()
     .split(",")
@@ -80,12 +85,6 @@ options_parameter = [
 # GRAPH MAP
 def figure_map():
     data_map = [
-        # go.Scattermapbox(
-        #     lat=metadata_files.Lintang,
-        #     lon=metadata_files.Bujur,
-        #     hoverinfo="none",
-        #     marker=go.scattermapbox.Marker(size=12, color="black", opacity=1),
-        # ),
         go.Scattermapbox(
             lat=metadata_files.Lintang,
             lon=metadata_files.Bujur,
@@ -97,15 +96,15 @@ def figure_map():
     layout_map = go.Layout(
         clickmode="event+select",
         title=dict(
-            text="<b>🔎 Lokasi Stasiun BMKG</b>".lower(),
+            text="<b>🔎 L🗾ok🅰️🗺️si 🛖 st🅰️sℹ️un 🏘️</b>".lower(),
             pad=dict(t=-35),
             font=dict(size=30),
         ),
         margin=dict(t=80),
         mapbox=dict(
             center=dict(
-                lat=metadata_files.Lintang.mean(),
-                lon=metadata_files.Bujur.mean(),
+                lat=metadata_files.Lintang.median(),
+                lon=metadata_files.Bujur.median() + 8,
             ),
         ),
         dragmode="pan",
@@ -184,7 +183,10 @@ def figure_completeness(stations, parameter):
             pad=dict(t=-25),
         ),
         height=300,
-        xaxis=dict(title={"text": "<b>📅 tanggal</b>"}),
+        xaxis=dict(
+            title={"text": "<b>📅 tanggal</b>"},
+            showspikes=True,
+        ),
         yaxis=dict(
             title={"text": "<b>🆔 ID Stasiun</b>".lower()},
             tickmode="array",
@@ -194,6 +196,7 @@ def figure_completeness(stations, parameter):
             ],
             ticktext=table_percent.index,
             tickangle=-90,
+            fixedrange=True,
         ),
         margin=dict(t=65),
         dragmode="zoom",
@@ -208,6 +211,9 @@ app = dash.Dash(
     title=APP_TITLE,
     update_title=APP_UPDATE_TITLE,
     external_stylesheets=[getattr(dbc.themes, BOOTSTRAP_THEME)],
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"},
+    ],
 )
 
 app.layout = dbc.Container(
@@ -215,21 +221,25 @@ app.layout = dbc.Container(
         dbc.Container(
             [
                 html.H1(
-                    APP_TITLE,
+                    APP_TITLE_HEAD,
                     className="text-center fw-bold fs-1 p-0",
                     style={"cursor": "pointer"},
                     id="tooltip-target",
                 ),
                 dbc.Tooltip(
-                    "Open Source Edition (Offline)".lower(), target="tooltip-target"
+                    "my first dashboard projects! 🤘".lower(),
+                    target="tooltip-target",
+                    className="fw-bold",
+                    style={"letter-spacing": "3px"},
+                    placement="right",
                 ),
+                pytemplate.HTML_CREATEDBY,
+                pytemplate.HTML_INFO,
+                pytemplate.ALERT_DEMO,
                 dcc.Markdown(
-                    """
-                created by [taruma](https://github.com/taruma) & powered by [hidrokit](https://github.com/hidrokit)
-                """,
-                    className="text-center fw-bolder fs-8",
+                    pytemplate.MD_TUTORIAL.lower(),
+                    style={"letter-spacing": "1px"},
                 ),
-                dcc.Markdown(pytemplate.MD_TUTORIAL.lower()),
             ],
         ),
         dcc.Graph(id="map-fig", figure=figure_map(), config=CONFIG_DCC_GRAPH),
@@ -239,10 +249,10 @@ app.layout = dbc.Container(
                     [
                         dbc.Col(
                             [
-                                html.P("🛖 stasiun", className="fs-2"),
+                                html.P("🛖 st🅰️sℹ️un 🏘️", className="fs-2"),
                                 dcc.Dropdown(
                                     options=options_stations,
-                                    value=[96783],
+                                    value=[96753, 96731, 96791, 97699, 97682],
                                     multi=True,
                                     clearable=False,
                                     id="stat-picker",
@@ -251,7 +261,7 @@ app.layout = dbc.Container(
                         ),
                         html.Div(
                             [
-                                html.P("🧮 parameter", className="fs-2"),
+                                html.P("🧮 pa®️am3️⃣✖️er 🔢", className="fs-2"),
                                 dcc.Dropdown(
                                     options=options_parameter,
                                     value="RR",
@@ -267,17 +277,20 @@ app.layout = dbc.Container(
                 ),
                 dbc.Row(
                     [
-                        html.Div(className="col"),
-                        html.Div(
+                        # html.Div(className="col"),
+                        dbc.Col(
                             dbc.Button(
-                                "Tampilkan Grafik".lower(),
+                                "🚿 Tampilkan 📈 Grafik 📊".lower(),
                                 id="button-main",
                                 color="primary",
-                                className="float-end",
+                                size="lg",
+                                className="float-center fw-bold",
                             ),
-                            className="col-4 mt-2",
+                            className="mt-4",
+                            width="auto",
                         ),
                     ],
+                    justify="center",
                 ),
             ],
         ),
@@ -304,23 +317,7 @@ app.layout = dbc.Container(
             "made with [Dash+Plotly](https://plotly.com)".lower(),
             className="fs-4 text-center",
         ),
-        html.Footer(
-            [
-                html.Span("\u00A9"),
-                " 2022 ",
-                html.A(
-                    "Taruma Sakti Megariansyah".lower(),
-                    href="https://github.com/taruma",
-                ),
-                ". MIT License. Visit this repository on ".lower(),
-                html.A(
-                    "Github".lower(),
-                    href="https://github.com/taruma/dash-bmkg-data-explorer",
-                ),
-                ".",
-            ],
-            className="text-center",
-        ),
+        pytemplate.HTML_FOOTER,
     ],
     className="p-3",
 )
