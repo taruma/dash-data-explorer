@@ -245,7 +245,7 @@ HTML_FOOTER = html.Div(
     html.Footer(
         [
             html.Span("\u00A9"),
-            " 2022 ",
+            " 2022-2024 ",
             html.A(
                 "Taruma Sakti Megariansyah".lower(),
                 href="https://github.com/taruma",
