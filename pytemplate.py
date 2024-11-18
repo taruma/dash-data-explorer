@@ -12,11 +12,7 @@ MAPBOX_TOKEN = config["PLOTLY"]["MAPBOX_TOKEN"]
 MAPBOX_TOKEN = None if MAPBOX_TOKEN == "" else MAPBOX_TOKEN
 
 # CHANGE VAR HERE
-SOURCE_IMAGE = (
-    "https://raw.githubusercontent.com/hidrokit/"
-    + "static-assets/main/logo_0.4.0-v1.1/hidrokit-hidrokit/400x100/"
-    + "400x100transparent.png"
-)
+SOURCE_IMAGE = None
 BASED_TEMPLATE = "plotly"
 HEATMAP_COLOR = "Blackbody"  # Viridis, Blackbody, Plasma, Blues, Aggrnyl
 
