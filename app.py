@@ -106,6 +106,7 @@ def figure_map():
                 lat=metadata_files.Lintang.median(),
                 lon=metadata_files.Bujur.median() + 8,
             ),
+            style="open-street-map",
         ),
         dragmode="pan",
     )
@@ -163,7 +164,7 @@ def figure_completeness(stations, parameter):
 
     table_percent = pd.concat(table_percent, axis=1).T.iloc[::-1]
     table_percent_date = table_percent.copy()
-    table_percent_date[:] = table_percent_date.columns.strftime("%B %Y").str.lower()
+    table_percent_date.columns = table_percent_date.columns.strftime("%B %Y").str.lower()
 
     data = go.Heatmap(
         z=table_percent.to_numpy(),
