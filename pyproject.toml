@@ -1,0 +1,21 @@
+[project]
+name = "dash-data-explorer"
+version = "2.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "plotly>=5.24",
+    "dash>=2.18",
+    "dash-bootstrap-components>=1.6",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "tables>=3.10",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "nbformat>=5.10.4",
+    "pip>=24.3.1",
+]
