@@ -4,3 +4,4 @@ dash-bootstrap-components>=1.6
 pandas>=2.2
 matplotlib>=3.9
 tables>=3.10
+gunicorn>=21.2
